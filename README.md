@@ -8,8 +8,8 @@ https://www.skool.com/umutcakirai-9288
 ## Ücretsiz n8n JSON Workflow'ları
 
 - [ana workflow](ai-influencer.json)
-- [gorsel uretme workflow](video-uretme.json)
-- [video uretme workflow](gorsel-uretme.json)
+- [gorsel uretme workflow](gorsel-uretme.json)
+- [video uretme workflow](video-uretme.json)
 
 ## Kurulum Talimatları
 
