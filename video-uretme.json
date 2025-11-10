@@ -1,0 +1,319 @@
+{
+  "name": "Fal.ai Veo 3.1 image to video subworkflow",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "prompt"
+            },
+            {
+              "name": "image_base64"
+            },
+            {
+              "name": "aspect_ratio"
+            },
+            {
+              "name": "resolution"
+            },
+            {
+              "name": "generate_audio",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -784,
+        -96
+      ],
+      "id": "c1292677-a28c-46af-bec1-5403dfcf022e",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/veo3.1/fast/image-to-video",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify({\n    prompt: $json.prompt,\n    image_url: $json.image_base64,\n    aspect_ratio: $json.aspect_ratio || '16:9',\n    generate_audio: $json.generate_audio || false,\n    resolution: $json.resolution || '1080p'\n  }, null, 2)\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -592,
+        -96
+      ],
+      "id": "04409cce-9dcf-4d09-b918-3b8c7c3533a8",
+      "name": "⚠️ Generate video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "AWSziuc8X9wNN3lW",
+          "name": "Fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -368,
+        -96
+      ],
+      "id": "e2307430-c805-4926-85c4-83f7007d60c0",
+      "name": "Wait for video",
+      "webhookId": "820d3040-1059-489d-983c-1c2ce58c3a58"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('⚠️ Generate video').item.json.status_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -176,
+        -96
+      ],
+      "id": "e5ab5373-a81d-4c69-acd3-5361c37e98d6",
+      "name": "⚠️ Get status of the video",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "AWSziuc8X9wNN3lW",
+          "name": "Fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "COMPLETED",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6fc5bea4-1567-474b-bfca-5394eb303217"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COMPLETED"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0882f634-2472-4d24-a1c3-a39f0cd94855",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "IN_PROGRESS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN_PROGRESS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e6c8b207-13ac-4537-8c5c-677039bc2fef",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "IN_QUEUE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN_QUEUE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        16,
+        -112
+      ],
+      "id": "d3f34de1-5950-4238-a382-9a4ea46460b3",
+      "name": "Video status"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('⚠️ Generate video').item.json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        -96
+      ],
+      "id": "de5b2dfa-dd78-4248-b9ce-3276e28ce884",
+      "name": "Get the video",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "AWSziuc8X9wNN3lW",
+          "name": "Fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        -96
+      ],
+      "id": "93639866-9cc5-4701-b1cb-a457c9581be1",
+      "name": "Download the video"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Generate video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Generate video": {
+      "main": [
+        [
+          {
+            "node": "Wait for video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for video": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Get status of the video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Get status of the video": {
+      "main": [
+        [
+          {
+            "node": "Video status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video status": {
+      "main": [
+        [
+          {
+            "node": "Get the video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the video": {
+      "main": [
+        [
+          {
+            "node": "Download the video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8efc6d58-11ae-440b-8996-f96aafe75a7b",
+  "meta": {
+    "instanceId": "96242dff5c24d0ef68c9c3613f57b8e78785db0c001bbdc899825523553eddfe"
+  },
+  "id": "g8qv1iS8picTYw0q",
+  "tags": []
+}
