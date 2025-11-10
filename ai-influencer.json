@@ -1,0 +1,3388 @@
+{
+  "name": "ai inf @umutcakirai",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "AI Influencer @umutcakirai",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "What do you want to do?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Add a new influencer"
+                  },
+                  {
+                    "option": "Create a weekly plan"
+                  },
+                  {
+                    "option": "Create a new post"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -432,
+        624
+      ],
+      "id": "5713aa72-c2e8-431f-89e5-3ad4f900d7db",
+      "name": "On form submission",
+      "webhookId": "d9176a7c-2df4-4823-b5a1-9073c7eca7f0"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "af22e08c-fb4c-4f71-beeb-baf1396e3025",
+                    "leftValue": "={{ $('On form submission').item.json['What do you want to do?'] }}",
+                    "rightValue": "Add a new influencer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Add a new influencer"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "31301ad8-6aea-4a83-aea9-32c4b54fcccb",
+                    "leftValue": "={{ $('On form submission').item.json['What do you want to do?'] }}",
+                    "rightValue": "Create a weekly plan",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Create a weekly plan"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('On form submission').item.json['What do you want to do?'] }}",
+                    "rightValue": "Create a new post",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a1482d9a-1250-4821-ac3c-088193496380"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Create a new post"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        112,
+        608
+      ],
+      "id": "dd87ce06-a91e-4990-a035-dd847a31004d",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const file in $input.first().binary) {\n  try {\n    const bin = $input.first().binary[file];\n    const binBuffer = await this.helpers.getBinaryDataBuffer(0, file);\n\n    const path = bin.directory\n      ? `${bin.directory}/${bin.fileName}`\n      : bin.fileName;\n\n    results.push(`data:${bin.mimeType};base64,` + Buffer.from(binBuffer).toString('base64'));\n  } catch (error) {\n    console.error(`Error processing file \"${file}\": ${error.message}`);\n  }\n}\n\nreturn [{\n  json: {\n    files: results,\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        528,
+        64
+      ],
+      "id": "66cc1c4c-ebb7-4285-a6d5-28d79259362e",
+      "name": "Convert images to base64"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name of the influencer",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Bio of the influencer",
+              "fieldType": "textarea",
+              "placeholder": "be as thorough as possible",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Reference image",
+              "fieldType": "file",
+              "acceptFileTypes": ".jpg,.png",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Add a weekly plan",
+              "fieldType": "checkbox",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Add a weekly plan"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Instagram Business ID",
+              "placeholder": "use the guide to get the ID"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        368,
+        64
+      ],
+      "id": "51640d29-3338-4fdb-a78c-86b9b9a22608",
+      "name": "Influencer details",
+      "webhookId": "d5ba0708-5fc2-4621-b672-4548f39da099"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "88fdb102-725a-43d9-9244-2871042a803d",
+              "leftValue": "={{ $('Influencer details').item.json['Add a weekly plan'] }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        64
+      ],
+      "id": "7177838b-a4aa-4638-8f99-80537a3b8fa8",
+      "name": "Add weekly plan?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9ac51cc9-10e5-44b4-8c6d-878fb3656503",
+              "name": "influencer_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1568,
+        624
+      ],
+      "id": "01d40ffe-d112-4d8e-a2c5-55294d298f56",
+      "name": "Set influencer id"
+    },
+    {
+      "parameters": {
+        "text": "=Create a social media post calendar for this artificial person, who's sharing the life events on Instagram using the instructions below.\nEach day of the week should be carefully planned, monday to sunday. Add at least one paragraph to each day.\nMake sure to add 3 different post ideas for each day.\n\n<PersonalProfile>\n{{ $('Get influencer for weekly planning').item.json.name }}\n\n{{ $('Get influencer for weekly planning').item.json.bio }}\n</PersonalProfile>\n\n<Instructions>\n{{ $json.Plan }}\n</Instructions>\n\n{{ $json.change_requests ? `\nThe weekly plan was already generated, please make the requested changes.\n\n<WeeklyPlan>\n${$json.weekly_plan}\n</WeeklyPlan>\n\n<ChangeRequests>\n${$json.change_requests}\n</ChangeRequests>\n` : '' }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "weekly_plan",
+              "description": "the weekly plan",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are a travel planner for a famous instagram celebrity. Create a detailed plan according to the instructions."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        2880,
+        416
+      ],
+      "id": "6a282986-3efe-406b-b8bd-7a4e6cb71130",
+      "name": "Generate weekly plan"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        1152
+      ],
+      "id": "7c4df066-d950-47d6-b699-86acfcf14f7c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "pyKXDwtIZbJGJPDW",
+          "name": "OpenAi account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.influencer_db }}",
+          "mode": "id"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.influencer_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1792,
+        624
+      ],
+      "id": "7a604da5-d63b-4ec1-a13c-e9c47ade506c",
+      "name": "Get influencer for weekly planning"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.influencer_db }}",
+          "mode": "id"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        384,
+        624
+      ],
+      "id": "b02f96fc-bb4e-4aaa-b5cf-2e091f902b60",
+      "name": "Get all influencers for weekly planning",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        576,
+        624
+      ],
+      "id": "f088d601-7cca-4160-8369-e702eb6ebf14",
+      "name": "Aggregate influencers",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        624
+      ],
+      "id": "a1e139ca-d815-49b4-a84f-71771e6e7311",
+      "name": "Aggregate previous plans"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.plans_db }}",
+          "mode": "id"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "influencer_id",
+              "keyValue": "={{ $('Set influencer id').item.json.influencer_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        624
+      ],
+      "id": "ae45da1e-ed71-4df0-997d-f02a838310e0",
+      "name": "Get previous plans",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.plans_db }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "influencer_id": "={{ $('Set influencer id').item.json.influencer_id }}",
+            "week": "={{ ((weekString) => {\n  const matches = weekString.match(/^(\\d{4}), week (\\d{1,2})/);\n  return `${matches[1]}/${matches[2]}`;\n})($('Select the week').item.json['Select week']) }}",
+            "plan": "={{ $('Generate weekly plan').last().json.output.weekly_plan }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "influencer_id",
+              "displayName": "influencer_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "week",
+              "displayName": "week",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "plan",
+              "displayName": "plan",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3504,
+        400
+      ],
+      "id": "a5e05251-c51c-4d38-8b2b-e8ac1814aeb0",
+      "name": "Insert plan"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7b46b57d-a476-4d73-969c-2b590ddf4967",
+              "name": "influencer_id",
+              "value": "={{ $json.influencer_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        368,
+        976
+      ],
+      "id": "550e0ae7-c9bf-4687-8429-f1d6168e9aab",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.influencer_db }}",
+          "mode": "id"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.influencer_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        1136
+      ],
+      "id": "d9f53a12-47ff-42b8-be6d-14ec68d6b90e",
+      "name": "Get influencer for creating a post"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0c71548d-c249-42aa-998e-2d91bc29a230",
+              "name": "influencer_db",
+              "value": "id",
+              "type": "string"
+            },
+            {
+              "id": "65a94cf4-b0ea-47ce-8289-acde7768fb2e",
+              "name": "plans_db",
+              "value": "id",
+              "type": "string"
+            },
+            {
+              "id": "627b55aa-69b2-4712-b81f-36ac2fccf2ce",
+              "name": "posts_db",
+              "value": "id",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -160,
+        624
+      ],
+      "id": "103c01d5-8ca6-4d6a-801f-e04c245f31bc",
+      "name": "Configure workflow"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Post type",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Image"
+                  },
+                  {
+                    "option": "Video"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        2496,
+        1152
+      ],
+      "id": "874964ed-ca50-4bec-9d78-0a6ac0926805",
+      "name": "Select post type",
+      "webhookId": "e9886663-3a3a-43ab-8973-9ccb2b1d9e5d"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2176,
+        1120
+      ],
+      "id": "9daee008-69ad-4dd3-94b0-fd02f00c3309",
+      "name": "Aggregate daily posts"
+    },
+    {
+      "parameters": {
+        "content": "# Post to instagram\n# [Guide to setup Facebook (Instagram)](https://github.com/umutcakirai/ai-influencer/blob/main/guide-instagram.md)",
+        "height": 884,
+        "width": 464,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3440,
+        1216
+      ],
+      "id": "277e700f-b93c-4750-92da-809d18f4da1b",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json['Post type'] }}",
+                    "rightValue": "Image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "d5b604c1-33a9-4d85-bf97-df9ab8369121"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Image"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ca0ddd39-98ec-417e-8627-e5ac1a7c6407",
+                    "leftValue": "={{ $json['Post type'] }}",
+                    "rightValue": "Video",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Video"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        368,
+        1680
+      ],
+      "id": "3f1d1c74-7974-4436-8542-4263204faa2d",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "text": "=Create a social media video post for this artificial person, who's sharing her life on Instagram using the instructions below.\nUse the detailed weekly plan to find what to post today. Make sure to look at the previous posts (if available) to make sure the post fits to the plan in a logical order.\n\nFor each post, generate an instagram post (text content, seed image generation prompt and a video prompt (that will use the seed image as the starter image)). \nAs I'm using a reference image for the image generation, don't describe the general look of the person, and start with \"create a photorealistic image of me\", and continue with describing the scene in great detail, make it a few paragraph long. Make sure the image prompt includes \"do not add any text on the image\".\nCreate a short summary of the post for cataloging purposes.\n\n<PersonalProfile>\n{{ $('Get influencer for creating a post').item.json.name }}\n\n{{ $('Get influencer for creating a post').item.json.bio }}\n</PersonalProfile>\n\n<WeeklyPlan>\n{{ $('Get the plan for the week').item.json.plan }}\n</WeeklyPlan>\n\n<DayOfTheWeek>\n{{ $now.format('EEEE') }}\n</DayOfTheWeek>\n\n{{ !$('Aggregate daily posts').item.json.data.length ? `\n<PreviousPostsFromToday>\n${$('Aggregate daily posts').item.json.data.map(item => `\n<Post>\n  <Content>${item.post_summary}</Content>\n</Post>\n`).join('\\n')}\n</PreviousPostsFromToday>\n` : '' }}\n\n{{ $json.change_requests ? `\nThe post was already generated, please apply the change requests\n\n<PostContent>\n${$json.post_content}\n</PostContent>\n\n<ImagePrompt>\n${$json.image_prompt}\n</ImagePrompt>\n\n<VideoPrompt>\n${$json.video_prompt}\n</VideoPrompt>\n\n<ChangeRequests>\n${$json.change_requests}\n</ChangeRequests>\n` : '' }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "post_content",
+              "description": "the instagram post's text content to share with the image. use emojis, hashtags",
+              "required": true
+            },
+            {
+              "name": "image_prompt",
+              "description": "the seed image prompt to use to generate the social media image",
+              "required": true
+            },
+            {
+              "name": "summary",
+              "description": "short summary of the post",
+              "required": true
+            },
+            {
+              "name": "video_prompt",
+              "description": "the video prompt, that will generate the 8s long video, starting from the seed image",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are a social media expert. Create a post for instagram based on the instructions."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1856
+      ],
+      "id": "f17a7149-6168-4976-aaa5-caaa29788b14",
+      "name": "Generate new Instagram post for video"
+    },
+    {
+      "parameters": {
+        "text": "=Create a social media post for this artificial person, who's sharing her life on Instagram using the instructions below.\nUse the detailed weekly plan to find what to post today. Make sure to look at the previous posts (if available) to make sure the post fits to the plan in a logical order.\n\nFor each post, generate an instagram post (text content and an image generation prompt). \nAs I'm using a reference image for the image generation, don't describe the general look of the person, and start with \"create a photorealistic image of me\", and continue with describing the scene in great detail, make it a few paragraph long. Make sure the image prompt includes \"do not add any text on the image\".\nCreate a short summary of the post for cataloging purposes.\n\n<PersonalProfile>\n{{ $('Get influencer for creating a post').item.json.name }}\n\n{{ $('Get influencer for creating a post').item.json.bio }}\n</PersonalProfile>\n\n<WeeklyPlan>\n{{ $('Get the plan for the week').item.json.plan }}\n</WeeklyPlan>\n\n<DayOfTheWeek>\n{{ $now.format('EEEE') }}\n</DayOfTheWeek>\n\n{{ !$('Aggregate daily posts').item.json.data.length ? `\n<PreviousPostsFromToday>\n${$('Aggregate daily posts').item.json.data.map(item => `\n<Post>\n  <Content>${item.post_summary}</Content>\n</Post>\n`).join('\\n')}\n</PreviousPostsFromToday>\n` : '' }}\n\n{{ $json.change_requests ? `\nThe post was already generated, please apply the change requests\n\n<PostContent>\n${$json.post_content}\n</PostContent>\n\n<ImagePrompt>\n${$json.image_prompt}\n</ImagePrompt>\n\n<ChangeRequests>\n${$json.change_requests}\n</ChangeRequests>\n` : '' }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "post_content",
+              "description": "the instagram post's text content to share with the image. use emojis, hashtags",
+              "required": true
+            },
+            {
+              "name": "image_prompt",
+              "description": "the image prompt to use to generate the social media image",
+              "required": true
+            },
+            {
+              "name": "summary",
+              "description": "short summary of the post",
+              "required": true
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are a social media expert. Create a post for instagram based on the instructions."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        656,
+        1440
+      ],
+      "id": "55a5697d-a01e-4019-bea4-d376599f979f",
+      "name": "Generate new Instagram post for image"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "TbgBIj6zLMdFK0bw",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/TbgBIj6zLMdFK0bw",
+          "cachedResultName": "Fal.ai nanobanana subworkflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "prompt": "={{ $json.image_prompt }}",
+            "image_base64": "={{ $('Get influencer for creating a post').item.json.image }}",
+            "aspect_ratio": "9:16"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "prompt",
+              "displayName": "prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "width",
+              "displayName": "width",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": true
+            },
+            {
+              "id": "height",
+              "displayName": "height",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": true
+            },
+            {
+              "id": "image_base64",
+              "displayName": "image_base64",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "aspect_ratio",
+              "displayName": "aspect_ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1696,
+        1840
+      ],
+      "id": "ee3c250f-f80f-4355-b02f-cf23034a16bb",
+      "name": "Generate seed image"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "g8qv1iS8picTYw0q",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/g8qv1iS8picTYw0q",
+          "cachedResultName": "Fal.ai Veo 3.1 image to video subworkflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "prompt": "={{ $json.video_prompt }}",
+            "image_base64": "={{ $('Generate seed image').item.json.images[0].url }}",
+            "aspect_ratio": "9:16",
+            "resolution": "1080p",
+            "generate_audio": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "prompt",
+              "displayName": "prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "image_base64",
+              "displayName": "image_base64",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "aspect_ratio",
+              "displayName": "aspect_ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "resolution",
+              "displayName": "resolution",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "generate_audio",
+              "displayName": "generate_audio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2640,
+        1824
+      ],
+      "id": "798efeef-d35e-4f83-95ea-28b9d26524ff",
+      "name": "Generate video"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bca7d364-d81e-415f-b759-b1ccceffb763",
+              "name": "video_prompt",
+              "value": "={{ $json.video_prompt || $('Generate new Instagram post for video').item.json.output.video_prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2464,
+        1824
+      ],
+      "id": "7b645a31-9bf1-4251-acd8-cc6c88e9c44f",
+      "name": "Set video prompt"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "TbgBIj6zLMdFK0bw",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/TbgBIj6zLMdFK0bw",
+          "cachedResultName": "Fal.ai nanobanana subworkflow"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "prompt": "={{ $json.image_prompt }}",
+            "image_base64": "={{ $('Get influencer for creating a post').item.json.image }}",
+            "aspect_ratio": "9:16"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "prompt",
+              "displayName": "prompt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "width",
+              "displayName": "width",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": true
+            },
+            {
+              "id": "height",
+              "displayName": "height",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": true
+            },
+            {
+              "id": "image_base64",
+              "displayName": "image_base64",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "aspect_ratio",
+              "displayName": "aspect_ratio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1888,
+        1424
+      ],
+      "id": "8b4b8d10-e6b0-4a78-b45d-500761827ce7",
+      "name": "Generate image"
+    },
+    {
+      "parameters": {
+        "content": "# Database settings",
+        "height": 480,
+        "width": 304,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        448
+      ],
+      "id": "fac6a090-f15c-49b1-81dd-df682bb92aa0",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d74c44d8-e66b-4835-9e15-729676b0c4d5",
+              "leftValue": "={{ $json.data.filter(item => item.id) }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        624
+      ],
+      "id": "c3f5f9f6-0451-4f72-9317-c26a9c986903",
+      "name": "If no influencer"
+    },
+    {
+      "parameters": {
+        "options": {
+          "formTitle": "You don't have any influencers yet",
+          "buttonLabel": "Create a new influencer"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        1072,
+        384
+      ],
+      "id": "7c93fa35-7bd7-46ac-b7a3-7e79ecf27527",
+      "name": "Notify user to create an influencer",
+      "webhookId": "de7583f1-0244-4738-a222-4091a0797699"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.influencer_db }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $('Influencer details').item.json['Name of the influencer'] }}",
+            "bio": "={{ $('Influencer details').item.json['Bio of the influencer'] }}",
+            "image": "={{ $json.files[0] }}",
+            "instagram_business_id": "={{ $('Influencer details').item.json['Instagram Business ID'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "bio",
+              "displayName": "bio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "image",
+              "displayName": "image",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "instagram_business_id",
+              "displayName": "instagram_business_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        704,
+        64
+      ],
+      "id": "9f726edb-b84e-4d7b-ab14-41d712d2bfee",
+      "name": "Add influencer"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "=Great success!",
+        "completionMessage": "={{ $json['Name of the influencer'] }} was saved successfully to the database. Now it's time to add some plans and posts!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        1168,
+        64
+      ],
+      "id": "ae6213da-051b-44dd-92c9-b3e336a74e7f",
+      "name": "Influencer saved",
+      "webhookId": "ed74d1ab-db40-48c9-8a42-99ebf608c367"
+    },
+    {
+      "parameters": {
+        "defineForm": "json",
+        "jsonOutput": "={{ JSON.stringify([\n  {\n    \"fieldLabel\": \"Influencer\",\n    \"requiredField\": true,\n    \"fieldType\": \"dropdown\",\n    \"fieldOptions\": {\n      \"values\": $json.data.map(item => { return {option: `${item.name}`} })\n    }\n  }\n]) }}",
+        "options": {
+          "formTitle": "Select the influencer"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        1008,
+        608
+      ],
+      "id": "c6fa3308-f7c0-45d8-8182-d019e53787fb",
+      "name": "Select influencer for planning",
+      "webhookId": "dd733256-81ee-4213-abcb-91cbe246d6e0"
+    },
+    {
+      "parameters": {
+        "jsCode": "let id;\n// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  const selectedInfluencer = item.json.Influencer;\n  id = $('Aggregate influencers').first().json.data.find(influencer => selectedInfluencer === influencer.name)?.id;\n}\n\nreturn [{\n  json: {\n    id\n  }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1248,
+        608
+      ],
+      "id": "c7c77b31-4338-4ff6-82c7-8273722f96cc",
+      "name": "Map influencer for planning"
+    },
+    {
+      "parameters": {
+        "jsCode": "let weeks = [];\n\nfunction weekBounds(year, weekNumber) {\n  const monday = DateTime.fromObject({\n    weekYear: year,\n    weekNumber: weekNumber,\n    weekday: 1,   // Monday\n    hour: 0,\n    minute: 0,\n    second: 0,\n    millisecond: 0\n  });\n  \n  const sunday = monday.plus({ days: 6 });\n\n  return {\n    start: monday.toFormat(\"MM/dd/yyyy\"),\n    end: sunday.toFormat(\"MM/dd/yyyy\")\n  };\n}\n\nfor (const item of $input.all()) {\n  let currentWeek = DateTime.now().weekNumber;\n  let currentYear = 2025;\n\n  while(weeks.length < 4) {\n    if (currentWeek > 52) {\n      currentWeek = 1;\n      currentYear++;\n    }\n    if ($input.first().json.data.find(previous => previous?.week === `${currentYear}/${currentWeek}`)) {\n      currentWeek++;\n      continue;\n    }\n    const {start, end} = weekBounds(currentYear, currentWeek)\n    weeks.push({\n      currentYear,\n      currentWeek,\n      startOfWeek: start,\n      endOfWeek: end\n    });\n    currentWeek++;\n  }\n}\n\nreturn [{\n  json: {\n    weeks\n  }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2368,
+        624
+      ],
+      "id": "22d00e27-32d2-4b8d-8d59-36beb70b0a43",
+      "name": "Generate week options"
+    },
+    {
+      "parameters": {
+        "defineForm": "json",
+        "jsonOutput": "={{ JSON.stringify([\n  {\n    \"fieldLabel\": \"Select week\",\n    \"requiredField\": true,\n    \"fieldType\": \"dropdown\",\n    \"fieldOptions\": {\n      \"values\": $json.weeks.map(item => { return {option: `${item.currentYear}, week ${item.currentWeek} (${item.startOfWeek}-${item.endOfWeek})`} })\n    }\n  },\n  {\n    \"fieldLabel\": \"Plan\",\n    \"fieldType\": \"textarea\",\n    \"requiredField\": true\n  }\n]) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        2560,
+        624
+      ],
+      "id": "a87fe754-06cf-422f-98e3-a693e06a8b17",
+      "name": "Select the week",
+      "webhookId": "e88b064f-10d2-48af-baff-086b69085e00"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Do you approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "If you selected no, what changes do you want to apply?",
+              "fieldType": "textarea",
+              "placeholder": "Be as thorough as possible"
+            },
+            {
+              "fieldLabel": "Create post",
+              "fieldType": "checkbox",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Create post"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "formDescription": "=Here's the weekly plan:\n\n{{ $json.output.weekly_plan }}"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        3152,
+        416
+      ],
+      "id": "0227daba-b7ae-4cc8-aed6-c0736c3bb571",
+      "name": "Plan approval",
+      "webhookId": "b4fd283b-aab4-4766-b444-12ecba728534"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4c919b7b-8ddc-4c10-afa4-68cd7edf2176",
+              "leftValue": "={{ $json['Do you approve?'] }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3312,
+        416
+      ],
+      "id": "1a3e6717-26c3-4a5e-8620-202b615a682e",
+      "name": "Approve plan?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6d99474-863d-4926-bbf6-6f8d96502ca4",
+              "name": "change_requests",
+              "value": "={{ $json['If you selected no, what changes do you want to apply?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "562dcfe4-60c2-4883-989c-97b2fa8accd0",
+              "name": "weekly_plan",
+              "value": "={{ $('Generate weekly plan').last().json.output.weekly_plan }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3536,
+        608
+      ],
+      "id": "a5661c36-3f4f-4d65-8440-af9bd699f4ea",
+      "name": "Set plan variables"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9bc0ab4b-838e-4f5f-a5e0-d4227bd65d58",
+              "leftValue": "={{ $('Plan approval').last().json['Create post'] }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3776,
+        624
+      ],
+      "id": "f90a7c7d-4dc1-4786-8725-5212e0b61cad",
+      "name": "Create post?"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "=Great success!",
+        "completionMessage": "=The plan for {{ $json.week }} was saved successfully to the database. Now it's time to add some posts!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        4032,
+        608
+      ],
+      "id": "a9f8186d-344c-4686-a046-fe356b08eef5",
+      "name": "Plan saved",
+      "webhookId": "ed74d1ab-db40-48c9-8a42-99ebf608c367"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.influencer_db }}",
+          "mode": "id"
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        352,
+        1136
+      ],
+      "id": "a037485c-6118-4612-b2e4-64bfe540ff20",
+      "name": "Get all influencers for creating posts"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        544,
+        1136
+      ],
+      "id": "88dae26d-520a-4be6-bf9f-c49ba4f1dd70",
+      "name": "Aggregate influencers for creating post"
+    },
+    {
+      "parameters": {
+        "defineForm": "json",
+        "jsonOutput": "={{ JSON.stringify([\n  {\n    \"fieldLabel\": \"Influencer\",\n    \"requiredField\": true,\n    \"fieldType\": \"dropdown\",\n    \"fieldOptions\": {\n      \"values\": $json.data.map(item => { return {option: `${item.name}`} })\n    }\n  }\n]) }}",
+        "options": {
+          "formTitle": "Select the influencer"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        736,
+        1136
+      ],
+      "id": "4da3490b-a303-4649-8add-59ea8ae0cc5b",
+      "name": "Select influencer for creating post",
+      "webhookId": "dd733256-81ee-4213-abcb-91cbe246d6e0"
+    },
+    {
+      "parameters": {
+        "jsCode": "let influencer_id;\n// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  const selectedInfluencer = item.json.Influencer;\n  influencer_id = $('Aggregate influencers for creating post').first().json.data.find(influencer => selectedInfluencer === influencer.name)?.id;\n}\n\nreturn [{\n  json: {\n    influencer_id\n  }\n}]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        1136
+      ],
+      "id": "9a147d52-a4a3-4b76-9e1d-1a76c43018ee",
+      "name": "Map influencer for creating post"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9ac51cc9-10e5-44b4-8c6d-878fb3656503",
+              "name": "influencer_id",
+              "value": "={{ $json.influencer_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        1136
+      ],
+      "id": "ab4eab6c-86fb-4795-b812-877067d1c5f1",
+      "name": "Set influencer id for creating a post"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.plans_db }}",
+          "mode": "id"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "week",
+              "keyValue": "={{ $now.format('yyyy/WW') }}"
+            },
+            {
+              "keyName": "influencer_id",
+              "keyValue": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        1136
+      ],
+      "id": "5dea7d16-80c9-42bf-a66a-88653a713cbb",
+      "name": "Get the plan for the week",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c2454227-a8e8-41d2-970a-bbaf3b587693",
+              "leftValue": "={{ $json.keys() }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "array",
+                "operation": "lengthGt",
+                "rightType": "number"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1744,
+        1136
+      ],
+      "id": "9751b366-e9c2-405a-bf71-71bb9cd496e9",
+      "name": "Has a plan for the week?"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.posts_db }}",
+          "mode": "id"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "createdAt",
+              "condition": "gt",
+              "keyValue": "={{ $now.startOf('day').toUTC() }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        1120
+      ],
+      "id": "70c2bb6a-7750-4515-b196-9fb828d98294",
+      "name": "Get previous posts for today",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Do you approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "If you selected no, what changes do you want to apply?",
+              "fieldType": "textarea",
+              "placeholder": "Be as thorough as possible"
+            }
+          ]
+        },
+        "options": {
+          "formDescription": "=Here's the post:\n{{ $json.output.post_content }}\n\nThis is the image prompt:\n{{ $json.output.image_prompt }}"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        976,
+        1440
+      ],
+      "id": "de7d57c7-a8b9-4167-89ad-87dcf12275a2",
+      "name": "Image post approval",
+      "webhookId": "b4fd283b-aab4-4766-b444-12ecba728534"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4c919b7b-8ddc-4c10-afa4-68cd7edf2176",
+              "leftValue": "={{ $json['Do you approve?'] }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1168,
+        1440
+      ],
+      "id": "a5cfa7dd-046e-40be-a70a-0765f4cdd690",
+      "name": "Approve image post?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6d99474-863d-4926-bbf6-6f8d96502ca4",
+              "name": "change_requests",
+              "value": "={{ $json['If you selected no, what changes do you want to apply?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "2b67b23c-bb56-4e31-adbf-3c5596098822",
+              "name": "post_content",
+              "value": "={{ $('Generate new Instagram post for image').item.json.output.post_content }}",
+              "type": "string"
+            },
+            {
+              "id": "7cafc015-bb66-4ce4-9406-2d9485008430",
+              "name": "image_prompt",
+              "value": "={{ $('Generate new Instagram post for image').item.json.output.image_prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1376,
+        1520
+      ],
+      "id": "750e6e62-42ff-4c91-90a8-b9f9aac0137f",
+      "name": "Set image post variables"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bca7d364-d81e-415f-b759-b1ccceffb763",
+              "name": "image_prompt",
+              "value": "={{ $json.image_prompt || $('Generate new Instagram post for image').last().json.output.image_prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        1424
+      ],
+      "id": "1ad5bd76-8c82-4eae-9fbd-723346d0611b",
+      "name": "Set image prompt for image post"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Do you approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "The image prompt",
+              "fieldType": "textarea",
+              "placeholder": "Change the image prompt here"
+            }
+          ]
+        },
+        "options": {
+          "formDescription": "=Here's the generated image:\n<img src=\"{{ $json.images[0].url }}\" width=\"100%\" alt=\"\" />\n\nThis was the image prompt:\n{{ $('Set image prompt for image post').last().json.image_prompt }}"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        2176,
+        1424
+      ],
+      "id": "73e7bf4e-205c-4240-8872-04d8ae9b5515",
+      "name": "Image approval",
+      "webhookId": "b4fd283b-aab4-4766-b444-12ecba728534"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4c919b7b-8ddc-4c10-afa4-68cd7edf2176",
+              "leftValue": "={{ $json['Do you approve?'] }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2384,
+        1424
+      ],
+      "id": "f71a9060-194d-493f-8cf3-bae3ed69e24e",
+      "name": "Approve image?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6ab73f03-24e1-40be-8a98-3148546f18d6",
+              "name": "image_prompt",
+              "value": "={{ $json['The image prompt'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2592,
+        1520
+      ],
+      "id": "1f9e8620-a178-4d80-8f0f-ff088b871434",
+      "name": "Setup image variables"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $('Get influencer for creating a post').item.json.instagram_business_id }}",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        3712,
+        1456
+      ],
+      "id": "1e45742f-3157-4462-ae2f-9bc02ff90a00",
+      "name": "Post to Instagram",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $('Get influencer for creating a post').item.json.instagram_business_id }}",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "image_url",
+                "value": "={{ $('Generate image').item.json.images[0].url }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Generate new Instagram post for image').last().json.output.post_content }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        1456
+      ],
+      "id": "07f229ea-6bb0-4663-b4a4-0f05ab677240",
+      "name": "Upload image to Instagram",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.posts_db }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "influencer_id": "={{ $('Get influencer for creating a post').item.json.id }}",
+            "post_summary": "={{ $('Generate new Instagram post for image').last().json.output.summary }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "influencer_id",
+              "displayName": "influencer_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "post_summary",
+              "displayName": "post_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        4064,
+        1456
+      ],
+      "id": "ae49d166-dda5-4f90-9084-2614cf613bfd",
+      "name": "Insert image post"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "The post was created",
+        "completionMessage": "Posted, and saved to the database",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        4240,
+        1456
+      ],
+      "id": "a6d7c110-7df4-4c5a-9659-d4975660fb23",
+      "name": "Image post saved",
+      "webhookId": "9a7cb03a-7c1a-43c6-8ba1-d97dc3c0349e"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Do you approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "If you selected no, what changes do you want to apply?",
+              "fieldType": "textarea",
+              "placeholder": "Be as thorough as possible"
+            }
+          ]
+        },
+        "options": {
+          "formDescription": "=Here's the post:\n{{ $json.output.post_content }}\n\nThis is the image prompt:\n{{ $json.output.image_prompt }}\n\nThis is the video prompt:\n{{ $json.output.video_prompt }}"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        944,
+        1856
+      ],
+      "id": "40ce1a4d-3223-4650-b4f8-9929d4504756",
+      "name": "Video post approval",
+      "webhookId": "b4fd283b-aab4-4766-b444-12ecba728534"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4c919b7b-8ddc-4c10-afa4-68cd7edf2176",
+              "leftValue": "={{ $json['Do you approve?'] }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1136,
+        1856
+      ],
+      "id": "e78730ec-4b92-46bf-b6dd-fa91246e596b",
+      "name": "Approve video post?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a6d99474-863d-4926-bbf6-6f8d96502ca4",
+              "name": "change_requests",
+              "value": "={{ $json['If you selected no, what changes do you want to apply?'] }}",
+              "type": "string"
+            },
+            {
+              "id": "2b67b23c-bb56-4e31-adbf-3c5596098822",
+              "name": "post_content",
+              "value": "={{ $('Generate new Instagram post for video').item.json.output.post_content }}",
+              "type": "string"
+            },
+            {
+              "id": "7cafc015-bb66-4ce4-9406-2d9485008430",
+              "name": "image_prompt",
+              "value": "={{ $('Generate new Instagram post for video').item.json.output.image_prompt }}",
+              "type": "string"
+            },
+            {
+              "id": "044a617b-6df1-44b7-9c54-c93e4425769e",
+              "name": "video_prompt",
+              "value": "={{ $('Generate new Instagram post for video').item.json.output.video_prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1312,
+        1968
+      ],
+      "id": "5e03a1d1-f6b1-4b13-8c9d-c0998ae4c4fb",
+      "name": "Setup video post variables"
+    },
+    {
+      "parameters": {
+        "options": {
+          "formTitle": "No plan for this week!",
+          "formDescription": "You need a weekly plan before creating a post",
+          "buttonLabel": "Create a weekly plan"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        1072,
+        944
+      ],
+      "id": "bad22b5a-ebdf-4931-afba-206e00da50c4",
+      "name": "Notify user about the missing plan",
+      "webhookId": "96a38fbf-a480-4aa9-8a91-54d119873518"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "79a1670d-70d1-4f58-b036-4583e5c8568a",
+              "name": "id",
+              "value": "={{ $('Get influencer for creating a post').item.json.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1280,
+        944
+      ],
+      "id": "fcb90838-abbf-4601-9fbe-02c7d2ef10c0",
+      "name": "Setup the influencer id"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Do you approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "The image prompt",
+              "fieldType": "textarea",
+              "placeholder": "Change the image prompt here"
+            }
+          ]
+        },
+        "options": {
+          "formDescription": "=Here's the generated image:\n<img src=\"{{ $json.images[0].url }}\" width=\"100%\" alt=\"\" />\n\nThis was the image prompt:\n{{ $('Set image prompt for seed image').last().json.image_prompt }}"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        1888,
+        1840
+      ],
+      "id": "784c6ad9-b5de-4ee2-9b12-955ff5e0683e",
+      "name": "Seed image approval",
+      "webhookId": "b4fd283b-aab4-4766-b444-12ecba728534"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4c919b7b-8ddc-4c10-afa4-68cd7edf2176",
+              "leftValue": "={{ $json['Do you approve?'] }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2064,
+        1840
+      ],
+      "id": "111fc2c7-93b6-42c7-888f-dbce32db37d5",
+      "name": "Approve seed image?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6ab73f03-24e1-40be-8a98-3148546f18d6",
+              "name": "image_prompt",
+              "value": "={{ $json['The image prompt'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2256,
+        1968
+      ],
+      "id": "df083209-d0b9-46d8-a14f-99f35737e5e3",
+      "name": "Setup seed image variables"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bca7d364-d81e-415f-b759-b1ccceffb763",
+              "name": "image_prompt",
+              "value": "={{ $json.image_prompt || $('Generate new Instagram post for video').last().json.output.image_prompt }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1504,
+        1840
+      ],
+      "id": "1c599ba3-9624-4fe1-8db4-9c3c10a06cb8",
+      "name": "Set image prompt for seed image"
+    },
+    {
+      "parameters": {
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Do you approve?",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Yes"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "The video prompt",
+              "fieldType": "textarea",
+              "placeholder": "Change the video prompt here"
+            }
+          ]
+        },
+        "options": {
+          "formDescription": "=Here's the generated image:\n<video width=\"100%\" controls>\n  <source src=\"{{ $json.video.url }}\" type=\"video/mp4\">\n  Your browser does not support the video tag.\n</video>\n\nThis was the video prompt:\n{{ $('Set video prompt').last().json.video_prompt }}"
+        }
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        2832,
+        1824
+      ],
+      "id": "e431284c-9eca-4b27-9072-a4fdb0bcfa9f",
+      "name": "Video approval",
+      "webhookId": "b4fd283b-aab4-4766-b444-12ecba728534"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4c919b7b-8ddc-4c10-afa4-68cd7edf2176",
+              "leftValue": "={{ $json['Do you approve?'] }}",
+              "rightValue": "Yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3024,
+        1824
+      ],
+      "id": "6c3242a4-2f4b-43ef-80e6-4064fe25ab73",
+      "name": "Approve video?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6ab73f03-24e1-40be-8a98-3148546f18d6",
+              "name": "video_prompt",
+              "value": "={{ $json['The video prompt'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3232,
+        1968
+      ],
+      "id": "26b92f37-eee6-4f15-8951-01d38398b623",
+      "name": "Video variables"
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $('Get influencer for creating a post').item.json.instagram_business_id }}",
+        "edge": "media",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "video_url",
+                "value": "={{ $('Generate video').last().json.video }}"
+              },
+              {
+                "name": "caption",
+                "value": "={{ $('Generate new Instagram post for image').last().json.output.post_content }}"
+              },
+              {
+                "name": "media_type",
+                "value": "VIDEO"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        3520,
+        1824
+      ],
+      "id": "28a7a942-bc25-4161-bccc-cc1a7ae1b56f",
+      "name": "Upload video to Instagram",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v22.0",
+        "node": "={{ $('Get influencer for creating a post').item.json.instagram_business_id }}",
+        "edge": "media_publish",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "creation_id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        3712,
+        1824
+      ],
+      "id": "a95e0836-364a-4e45-a323-d93e9bf0a90b",
+      "name": "Post video post to Instagram",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "# Create a new influencer",
+        "height": 352,
+        "width": 1056
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        -80
+      ],
+      "typeVersion": 1,
+      "id": "619459a8-af8a-484e-a3a2-8e0bac8345fe",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Add a weekly plan",
+        "height": 432,
+        "width": 3920
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        352
+      ],
+      "typeVersion": 1,
+      "id": "77e42be3-f9bf-46aa-8fc4-85883a010efb",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "# Create a post",
+        "height": 1264,
+        "width": 4144
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        880
+      ],
+      "typeVersion": 1,
+      "id": "6bc60143-f83b-489a-8902-84b7b18d0665",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "={{ $('Configure workflow').item.json.posts_db }}",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "influencer_id": "={{ $('Get influencer for creating a post').item.json.id }}",
+            "post_summary": "={{ $('Generate new Instagram post for video').last().json.output.summary }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "influencer_id",
+              "displayName": "influencer_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "post_summary",
+              "displayName": "post_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        4064,
+        1824
+      ],
+      "id": "c9ce08da-ca75-4665-81d8-bf25cd9e78cd",
+      "name": "Insert video post"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "The post was created",
+        "completionMessage": "Posted, and saved to the database",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.3,
+      "position": [
+        4256,
+        1824
+      ],
+      "id": "23cdedc6-9d5e-479f-a467-38f4cf715782",
+      "name": "Video post saved",
+      "webhookId": "9a7cb03a-7c1a-43c6-8ba1-d97dc3c0349e"
+    },
+    {
+      "parameters": {
+        "content": "# 📚 [Sinirli alimin oldugu topluluga omur boyu katilmak icin!](https://www.skool.com/umutcakirai-9288)\n",
+        "height": 148,
+        "width": 1052,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        96
+      ],
+      "id": "8962a4f8-dba2-4d42-8bc3-7bdfcdc539f1",
+      "name": "Sticky Note17"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Configure workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Influencer details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get all influencers for weekly planning",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get all influencers for creating posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert images to base64": {
+      "main": [
+        [
+          {
+            "node": "Add influencer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Influencer details": {
+      "main": [
+        [
+          {
+            "node": "Convert images to base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add weekly plan?": {
+      "main": [
+        [
+          {
+            "node": "Set influencer id",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Influencer saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set influencer id": {
+      "main": [
+        [
+          {
+            "node": "Get influencer for weekly planning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate weekly plan": {
+      "main": [
+        [
+          {
+            "node": "Plan approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate weekly plan",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Generate new Instagram post for video",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Generate new Instagram post for image",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get influencer for weekly planning": {
+      "main": [
+        [
+          {
+            "node": "Get previous plans",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all influencers for weekly planning": {
+      "main": [
+        [
+          {
+            "node": "Aggregate influencers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate influencers": {
+      "main": [
+        [
+          {
+            "node": "If no influencer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate previous plans": {
+      "main": [
+        [
+          {
+            "node": "Generate week options",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get previous plans": {
+      "main": [
+        [
+          {
+            "node": "Aggregate previous plans",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert plan": {
+      "main": [
+        [
+          {
+            "node": "Create post?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Set influencer id for creating a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get influencer for creating a post": {
+      "main": [
+        [
+          {
+            "node": "Get the plan for the week",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configure workflow": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select post type": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate daily posts": {
+      "main": [
+        [
+          {
+            "node": "Select post type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Generate new Instagram post for image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate new Instagram post for video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate new Instagram post for video": {
+      "main": [
+        [
+          {
+            "node": "Video post approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate new Instagram post for image": {
+      "main": [
+        [
+          {
+            "node": "Image post approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate seed image": {
+      "main": [
+        [
+          {
+            "node": "Seed image approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate video": {
+      "main": [
+        [
+          {
+            "node": "Video approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set video prompt": {
+      "main": [
+        [
+          {
+            "node": "Generate video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate image": {
+      "main": [
+        [
+          {
+            "node": "Image approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If no influencer": {
+      "main": [
+        [
+          {
+            "node": "Select influencer for planning",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify user to create an influencer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify user to create an influencer": {
+      "main": [
+        [
+          {
+            "node": "Influencer details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add influencer": {
+      "main": [
+        [
+          {
+            "node": "Add weekly plan?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select influencer for planning": {
+      "main": [
+        [
+          {
+            "node": "Map influencer for planning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map influencer for planning": {
+      "main": [
+        [
+          {
+            "node": "Set influencer id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate week options": {
+      "main": [
+        [
+          {
+            "node": "Select the week",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select the week": {
+      "main": [
+        [
+          {
+            "node": "Generate weekly plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan approval": {
+      "main": [
+        [
+          {
+            "node": "Approve plan?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve plan?": {
+      "main": [
+        [
+          {
+            "node": "Insert plan",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set plan variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set plan variables": {
+      "main": [
+        [
+          {
+            "node": "Generate weekly plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create post?": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Plan saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all influencers for creating posts": {
+      "main": [
+        [
+          {
+            "node": "Aggregate influencers for creating post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate influencers for creating post": {
+      "main": [
+        [
+          {
+            "node": "Select influencer for creating post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select influencer for creating post": {
+      "main": [
+        [
+          {
+            "node": "Map influencer for creating post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map influencer for creating post": {
+      "main": [
+        [
+          {
+            "node": "Set influencer id for creating a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set influencer id for creating a post": {
+      "main": [
+        [
+          {
+            "node": "Get influencer for creating a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the plan for the week": {
+      "main": [
+        [
+          {
+            "node": "Has a plan for the week?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has a plan for the week?": {
+      "main": [
+        [
+          {
+            "node": "Get previous posts for today",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notify user about the missing plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get previous posts for today": {
+      "main": [
+        [
+          {
+            "node": "Aggregate daily posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image post approval": {
+      "main": [
+        [
+          {
+            "node": "Approve image post?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve image post?": {
+      "main": [
+        [
+          {
+            "node": "Set image prompt for image post",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set image post variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set image post variables": {
+      "main": [
+        [
+          {
+            "node": "Generate new Instagram post for image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set image prompt for image post": {
+      "main": [
+        [
+          {
+            "node": "Generate image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image approval": {
+      "main": [
+        [
+          {
+            "node": "Approve image?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve image?": {
+      "main": [
+        [
+          {
+            "node": "Upload image to Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Setup image variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup image variables": {
+      "main": [
+        [
+          {
+            "node": "Set image prompt for image post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to Instagram": {
+      "main": [
+        [
+          {
+            "node": "Insert image post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload image to Instagram": {
+      "main": [
+        [
+          {
+            "node": "Post to Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert image post": {
+      "main": [
+        [
+          {
+            "node": "Image post saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video post approval": {
+      "main": [
+        [
+          {
+            "node": "Approve video post?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve video post?": {
+      "main": [
+        [
+          {
+            "node": "Set image prompt for seed image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Setup video post variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup video post variables": {
+      "main": [
+        [
+          {
+            "node": "Generate new Instagram post for video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify user about the missing plan": {
+      "main": [
+        [
+          {
+            "node": "Setup the influencer id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup the influencer id": {
+      "main": [
+        [
+          {
+            "node": "Set influencer id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seed image approval": {
+      "main": [
+        [
+          {
+            "node": "Approve seed image?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve seed image?": {
+      "main": [
+        [
+          {
+            "node": "Set video prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Setup seed image variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup seed image variables": {
+      "main": [
+        [
+          {
+            "node": "Set image prompt for seed image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set image prompt for seed image": {
+      "main": [
+        [
+          {
+            "node": "Generate seed image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video approval": {
+      "main": [
+        [
+          {
+            "node": "Approve video?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve video?": {
+      "main": [
+        [
+          {
+            "node": "Upload video to Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Video variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video variables": {
+      "main": [
+        [
+          {
+            "node": "Set video prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload video to Instagram": {
+      "main": [
+        [
+          {
+            "node": "Post video post to Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post video post to Instagram": {
+      "main": [
+        [
+          {
+            "node": "Insert video post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert video post": {
+      "main": [
+        [
+          {
+            "node": "Video post saved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e2bb9336-e795-4f98-a06d-2de46d37dece",
+  "meta": {
+    "instanceId": "96242dff5c24d0ef68c9c3613f57b8e78785db0c001bbdc899825523553eddfe"
+  },
+  "id": "ILXQnF7AqPpIITj5",
+  "tags": []
+}
