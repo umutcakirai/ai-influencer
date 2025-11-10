@@ -1,0 +1,312 @@
+{
+  "name": "Fal.ai nanobanana subworkflow",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "prompt"
+            },
+            {
+              "name": "image_base64"
+            },
+            {
+              "name": "aspect_ratio"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -800,
+        -80
+      ],
+      "id": "6a306d28-8cbe-427c-9ffb-7dd5f858e4ba",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -384,
+        -80
+      ],
+      "id": "fe44ebcd-f6db-4842-a96a-fdf343bfa686",
+      "name": "Wait for seed image",
+      "webhookId": "c2af0d99-26e3-43ab-84fd-62b58465d2cd"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "COMPLETED",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "6fc5bea4-1567-474b-bfca-5394eb303217"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COMPLETED"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "0882f634-2472-4d24-a1c3-a39f0cd94855",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "IN_PROGRESS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN_PROGRESS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e6c8b207-13ac-4537-8c5c-677039bc2fef",
+                    "leftValue": "={{ $json.status }}",
+                    "rightValue": "IN_QUEUE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IN_QUEUE"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "fa5ba311-c739-4194-b38f-dd65c62995a0",
+      "name": "Seed image status"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.images[0].url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        384,
+        -80
+      ],
+      "id": "bd68f265-4279-452e-8be3-3c30a9980d46",
+      "name": "Download the image"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('⚠️ Generate image').item.json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        -80
+      ],
+      "id": "da30a75c-f62e-4bf9-bba9-6050d3380643",
+      "name": "Get the image",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "AWSziuc8X9wNN3lW",
+          "name": "Fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('⚠️ Generate image').item.json.status_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -192,
+        -80
+      ],
+      "id": "88d4ba35-d957-4825-b893-8c26de4fc750",
+      "name": "⚠️ Get status of the image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "AWSziuc8X9wNN3lW",
+          "name": "Fal.ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/nano-banana/edit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  JSON.stringify({\n    prompt: $json.prompt,\n    image_urls: [\n      $json.image_base64\n    ],\n    aspect_ratio: $json.aspect_ratio\n  }, null, 2)\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -608,
+        -80
+      ],
+      "id": "b4ebd8dd-7643-4f41-992c-0221da68c8b2",
+      "name": "⚠️ Generate image",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "AWSziuc8X9wNN3lW",
+          "name": "Fal.ai"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Generate image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for seed image": {
+      "main": [
+        [
+          {
+            "node": "⚠️ Get status of the image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Seed image status": {
+      "main": [
+        [
+          {
+            "node": "Get the image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for seed image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for seed image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the image": {
+      "main": [
+        [
+          {
+            "node": "Download the image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Get status of the image": {
+      "main": [
+        [
+          {
+            "node": "Seed image status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚠️ Generate image": {
+      "main": [
+        [
+          {
+            "node": "Wait for seed image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f4d33869-65f3-4141-b5f4-2a3f2274eaea",
+  "meta": {
+    "instanceId": "96242dff5c24d0ef68c9c3613f57b8e78785db0c001bbdc899825523553eddfe"
+  },
+  "id": "TbgBIj6zLMdFK0bw",
+  "tags": []
+}
